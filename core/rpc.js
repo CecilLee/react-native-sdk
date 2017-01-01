@@ -25,6 +25,37 @@ function uploadFile(uri, token, formInput) {
   return fetch(conf.UP_HOST, options);
 }
 
+
+/**
+ *
+ * 直传文件，使用xhr的方案
+ *
+ */
+function uploadFile2(uri, token, key, onprogress) {
+  return new Promise((resolve, reject)=>{
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(e) {
+      onprogress && onprogress(e);
+    };
+    xhr.open('POST', conf.UP_HOST);
+    xhr.onload = () => {
+      if (xhr.status !== 200) {
+        reject && reject(xhr);
+        return;
+      }
+
+      resolve && resolve(xhr);
+    };
+    var formdata = new FormData();
+    formdata.append("key", key);
+    formdata.append("token", token);
+    formdata.append("file", {uri:uri, type:'application/octet-stream', name:uri.match(/[^\/]+$/)[0]});
+
+    xhr.send(formdata);
+  });
+}
+
+
 //发送管理和fop命令,总之就是不上传文件
 function post(uri, adminToken, content) {
   var headers = {
@@ -50,4 +81,4 @@ function post(uri, adminToken, content) {
   return fetch(uri, payload);
 }
 
-export default {uploadFile,post}
+export default {uploadFile, uploadFile2, post}
