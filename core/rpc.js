@@ -2,6 +2,8 @@
  * Created by buhe on 16/4/12.
  */
 import conf from './conf.js';
+import RNFetchBlob from 'react-native-fetch-blob';
+
 
 /**
  * 直传文件
@@ -53,6 +55,29 @@ function uploadFile2(uri, token, key, onprogress) {
 
     xhr.send(formdata);
   });
+}
+
+/**
+ * Use react-native-fetch-blob to fix large file issue
+ */
+export function uploadFile3(uri, token, key, name) {
+
+  if (typeof name == 'undefined') {
+    var filePath = uri.split("/");
+    if (filePath.length > 0) {
+      name = filePath[filePath.length - 1];
+    } else {
+      name = "";
+    }
+  }
+
+  return RNFetchBlob.fetch('POST', conf.UP_HOST, {
+    'Content-Type' : 'multipart/form-data',
+  }, [
+    { name: 'file', filename: name, type: 'application/octet-stream', data: RNFetchBlob.wrap(uri)},
+    { name : 'key', data : key},
+    { name : 'token', data : token},
+  ]);
 }
 
 
