@@ -106,4 +106,4 @@ function post(uri, adminToken, content) {
   return fetch(uri, payload);
 }
 
-export default {uploadFile, uploadFile2, post}
+export default {uploadFile, uploadFile2, uploadFile3, post}
